@@ -57,13 +57,13 @@ const onPressScan = async (buttonList: any[], setbuttonList: any) => {
             if (device?.name) {
                 if (!devices.find(name => name == device.name)) {
                     devices.push(device.name);
-                    debugLog += "=============\n";
-                    debugLog += "id: " + device?.id + "\n";
-                    debugLog += "name: " + device?.name + "\n";
-                    debugLog += "localname: " + device?.localName + "\n";
+                    // debugLog += "=============\n";
+                    // debugLog += "id: " + device?.id + "\n";
+                    // debugLog += "name: " + device?.name + "\n";
+                    // debugLog += "localname: " + device?.localName + "\n";
                     const newElement =
                         <Button
-                            onPress={() => onPressDeviceName(device.name)}
+                            onPress={() => onPressDeviceName(device)}
                             title={device.name}
                             color="#841584"
                             accessibilityLabel="Connect to the device."
@@ -81,8 +81,25 @@ const onPressLog = () => {
     Alert.alert("Log", debugLog);
 }
 
-const onPressDeviceName = (name: any) => {
-    Alert.alert("Log", name);
+const onPressDeviceName = async (device: any) => {
+    if (device.name == "ArduinoBLE") {
+        bleManager.stopDeviceScan();
+        try {
+            await device.connect()
+                .then((device: any) => {
+                    debugLog += device.discoverAllServicesAndCharacteristics();
+                    return device.discoverAllServicesAndCharacteristics();
+                })
+                .then((device: any) => {
+                    // Do work on device with services and characteristics
+                })
+                .catch((error: any) => {
+                    // Handle errors
+                });
+        } catch (error: any) {
+            console.log(error.reason);
+        }
+    }
 }
 
 const styles = StyleSheet.create({
